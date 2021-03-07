@@ -1,0 +1,16 @@
+/* body {
+    background-color: #282c34;
+    color: white;
+    padding: 40px;
+    font-family: Arial;
+    text-align: center;
+  } */
+  * {font-size: 20px;}
+
+  .smaller-input {
+    font-size: 5px;
+    padding: 2px 5px;
+  }
+  .row-space{
+    margin: 15px;
+  }
