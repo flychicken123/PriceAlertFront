@@ -1,19 +1,28 @@
 import React, { Component, useState } from 'react';
 import { Button, Navbar, Nav, NavDropdown, Form, FormControl, Modal } from "react-bootstrap";
 import '../css/TopNavBar.css';
+import Login from './Login.jsx';
+import SignUp from './Signup.jsx';
 const TopNavbar = () => {
-    const [show, setShow] = useState(false);
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+    const [email, setEmail] = useState("");
+    const [error, setError] = useState("");
+    const LoginIn = (email) => {
+        setEmail(email);
+        console.log(email);
+    }
+    const Logout = () => {
+        console.log("logout");
+    }
+    console.log(email);
     return (
         <div>
             <Navbar bg="#282c34" variant="dark" expand="lg">
-                <Navbar.Brand href="#home">React-Bootstrap</Navbar.Brand>
+                <Navbar.Brand href="/">React-Bootstrap</Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="mr-auto">
-                        <Nav.Link href="#home">Home</Nav.Link>
-                        <Nav.Link href="#link">Link</Nav.Link>
+                        <Nav.Link href="/">Home</Nav.Link>
+                        <Nav.Link href="/contactus">Contact</Nav.Link>
                         <NavDropdown title="Dropdown" id="basic-nav-dropdown">
                             <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
                             <NavDropdown.Item href="#action/3.2">Another action</NavDropdown.Item>
@@ -24,24 +33,10 @@ const TopNavbar = () => {
                     </Nav>
                     <Form inline>
 
-                        <Button variant="info" className="login" onClick={handleShow}>Login</Button>
-                        <Button variant="outline-success">Sign up</Button>
-
+                        <Login onButtonClick={LoginIn} />
+                        <SignUp />
                     </Form>
-                    <Modal show={show} onHide={handleClose}>
-                        <Modal.Header closeButton>
-                            <Modal.Title>Modal heading</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>Woohoo, you're reading this text in a modal!</Modal.Body>
-                        <Modal.Footer>
-                            <Button variant="secondary" onClick={handleClose}>
-                                Close
-                                </Button>
-                            <Button variant="primary" onClick={handleClose}>
-                                Save Changes
-                             </Button>
-                        </Modal.Footer>
-                    </Modal>
+
                 </Navbar.Collapse>
             </Navbar>
         </div>
