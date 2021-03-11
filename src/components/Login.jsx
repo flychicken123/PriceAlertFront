@@ -1,4 +1,4 @@
-import React, { Component, useState, useCallback, history } from 'react';
+import React, { Component, useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Button, Navbar, Nav, NavDropdown, Form, FormControl, Modal } from "react-bootstrap";
 
@@ -8,14 +8,21 @@ const Login = ({ onButtonClick }) => {
     const [show, setShow] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const history = useHistory();
+    const [error, setError] = useState("");
     function validateForm() {
         return email.length > 0 && password.length > 0;
     }
     const handleSubmit = useCallback((event) => {
         event.preventDefault();
-        onButtonClick(email);
-        handleClose();
+        if (email == "admin@gmail.com" && password == "admin") {
+            onButtonClick(email);
+            setError("");
+            handleClose();
+        } else {
+            console.log("not match");
+            setError("it's error");
+        }
+
     });
     return (
 
@@ -26,6 +33,7 @@ const Login = ({ onButtonClick }) => {
                 <Modal.Header closeButton>
                     <Modal.Title>Login</Modal.Title>
                 </Modal.Header>
+                {(error != "") ? (<div className="error">not match</div>) : ""}
                 <Modal.Body>
                     <Form>
                         <Form.Group controlId="formBasicEmail">

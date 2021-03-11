@@ -1,19 +1,28 @@
-import React, { Component, useState } from 'react';
-import { Button, Navbar, Nav, NavDropdown, Form, FormControl, Modal } from "react-bootstrap";
+import React, { Component, useState, useEffect } from 'react';
+import { Button, Navbar, Nav, NavDropdown, Form, FormControl, Modal, Row, Col } from "react-bootstrap";
 import '../css/TopNavBar.css';
 import Login from './Login.jsx';
 import SignUp from './Signup.jsx';
 const TopNavbar = () => {
     const [email, setEmail] = useState("");
     const [error, setError] = useState("");
+    const [isSign, setIsSign] = useState(false)
     const LoginIn = (email) => {
         setEmail(email);
-        console.log(email);
     }
-    const Logout = () => {
+    const handleLogOut = () => {
+        setEmail("");
+        setIsSign(false);
         console.log("logout");
     }
-    console.log(email);
+
+    useEffect(() => {
+        if (email == "")
+            setIsSign(false);
+        else
+            setIsSign(true);
+    }, [email])
+
     return (
         <div>
             <Navbar bg="#282c34" variant="dark" expand="lg">
@@ -31,11 +40,34 @@ const TopNavbar = () => {
                             <NavDropdown.Item href="#action/3.4">Separated link</NavDropdown.Item>
                         </NavDropdown>
                     </Nav>
-                    <Form inline>
 
-                        <Login onButtonClick={LoginIn} />
-                        <SignUp />
-                    </Form>
+                    {(() => {
+                        if (isSign) {
+                            return (
+                                <Form inline>
+                                    <Row>
+                                        <Col> <Form.Label>{email}</Form.Label></Col>
+                                        <Col>
+                                            <Button variant="primary" onClick={handleLogOut} >
+                                                Log out
+                                            </Button>
+                                        </Col>
+                                    </Row>
+                                </Form>
+                            )
+
+                        } else {
+                            console.log("is not sign ")
+                            return (
+                                <Form inline>
+                                    <Login onButtonClick={LoginIn} />
+                                    <SignUp />
+                                </Form>
+                            )
+
+                        }
+                    })()}
+
 
                 </Navbar.Collapse>
             </Navbar>
