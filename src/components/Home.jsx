@@ -5,8 +5,13 @@ import { Helmet } from 'react-helmet';
 import '../css/Home.css';
 export default function Home(props) {
 
-    const [coinTypes, setCoinTypes] = useState([]);
-    const [selectedOption, setSelectedOption] = useState(props ? props.match?.params?.template_id : null);
+    const [coinTypes, setCoinTypes] = useState("");
+    const [selectedCoin, setSelectedCoin] = useState("");
+    const [selectedMethod, setSelectedMethod] = useState("");
+    const [selectedExchange, setSelectedExchange] = useState("");
+    const [price, setPrice] = useState("");
+    const [email, setEmail] = useState("");
+    const [errors, setErrors] = useState("");
     const customStyles = {
         control: base => ({
             ...base,
@@ -32,18 +37,54 @@ export default function Home(props) {
         })
     };
 
-    // const coinOptions = (f) => {
-    //     return [{ name: "- select -", id: "" }, ...coinTypes].map((coinType) => {
-    //         return {
-    //             label: coinType.name,
-    //             value: coinType.id
-    //         }
-    //     })
-    // };
+
     const handleCoinChange = useCallback((coin_id) => {
-        setSelectedOption(coin_id);
+        setSelectedCoin(coin_id);
         console.log(coin_id.name);
     }, []);
+    const handleExchangeChange = useCallback((exchange_id) => {
+        setSelectedExchange(exchange_id);
+    })
+    const handleMethodChange = useCallback((method_id) => {
+        setSelectedMethod(method_id);
+    })
+    const handlePriceChange = (event) => {
+        event.preventDefault();
+        setPrice(event.target.value);
+    }
+    const handleEmailChange = (event) => {
+        event.preventDefault();
+        setEmail(event.target.value);
+    }
+    const requestBody = JSON.stringify({
+        data: {
+            coinTypes: selectedCoin,
+            method: selectedMethod,
+            price: price,
+            exchange: selectedExchange,
+            email: email
+        }
+    });
+    const handleSubmit = () => {
+        console.log("price" + price);
+        fetch(
+            '/api/v1/my_shop/export_jobs',
+            {
+                method: 'POST',
+                body: JSON.stringify(requestBody),
+                credentials: "include",
+                headers: { 'Content-Type': 'application/json' }
+            }).then(response => {
+                if (!response.ok) { throw response }
+                return response.json()
+            }).catch((response) => {
+                response.json().then(body => {
+                    if (body.errors) {
+                        setErrors(body.errors)
+                    }
+                });
+            });
+    }
     const fetchCoinList = () => {
         return fetch(`https://6043fea2a20ace001728e9b7.mockapi.io/api/v1/coinlist/coinlist`).then(res => res.json());
     }
@@ -70,7 +111,7 @@ export default function Home(props) {
                                     cacheOptions
                                     defaultOptions
                                     onChange={handleCoinChange}
-                                    value={selectedOption}
+                                    value={selectedCoin}
                                     loadOptions={fetchCoinList}
                                     getOptionValue={option => option.id}
                                     getOptionLabel={option => option.name}
@@ -100,8 +141,8 @@ export default function Home(props) {
                                 <AsyncSelect
                                     cacheOptions
                                     defaultOptions
-                                    onChange={handleCoinChange}
-                                    value={selectedOption}
+                                    onChange={handleMethodChange}
+                                    value={selectedMethod}
                                     loadOptions={fetchCoinList}
                                     getOptionValue={option => option.id}
                                     getOptionLabel={option => option.name}
@@ -124,7 +165,7 @@ export default function Home(props) {
 
                             </Col>
                             <Col xs="auto"><Form.Text className="normalText">of price</Form.Text></Col>
-                            <Col xs="auto"> <Form.Control className="smaller-input" htmlSize="10" size="sm" type="text" placeholder="price number" /></Col>
+                            <Col xs="auto"> <Form.Control className="smaller-input" htmlSize="10" size="sm" type="text" placeholder="price number" onChange={handlePriceChange} /></Col>
                             <Col xs="auto"><Form.Text className="normalText">USD</Form.Text></Col>
                         </Form.Row>
                         <Form.Row className="row-space">
@@ -133,8 +174,8 @@ export default function Home(props) {
                                 <AsyncSelect
                                     cacheOptions
                                     defaultOptions
-                                    onChange={handleCoinChange}
-                                    value={selectedOption}
+                                    onChange={handleExchangeChange}
+                                    value={selectedExchange}
                                     loadOptions={fetchCoinList}
                                     getOptionValue={option => option.id}
                                     getOptionLabel={option => option.name}
@@ -160,9 +201,9 @@ export default function Home(props) {
 
                         </Form.Row>
                         <Form.Row className="row-space">
-                            <Col xs="auto"> <Form.Control className="smaller-input" htmlSize="50" size="sm" type="text" placeholder="Your email address" /></Col>
+                            <Col xs="auto"> <Form.Control className="smaller-input" htmlSize="50" size="sm" type="text" placeholder="Your email address" onChange={handleEmailChange} /></Col>
                         </Form.Row>
-                        <Button variant="secondary">Submit</Button>
+                        <Button variant="secondary" onClick={handleSubmit}>Submit</Button>
                     </Form>
 
                 </div>
