@@ -2,18 +2,41 @@ import React, { Component, useState } from 'react';
 import { Button, Navbar, Nav, NavDropdown, Form, FormControl, Modal } from "react-bootstrap";
 
 const Login = () => {
-
-
     const handleRegClose = () => setShowReg(false);
     const handleRegShow = () => setShowReg(true);
     const [showReg, setShowReg] = useState(false);
     const [emailReg, setEmailReg] = useState("");
     const [passwordReg, setPasswordReg] = useState("");
+    const [error, setErrors] = useState("");
     function validateForm() {
         return emailReg.length > 0 && passwordReg.length > 0;
     }
+    const requestBody =
+    {
+        email: emailReg,
+        password: passwordReg
+    }
     function handleSubmit(event) {
         event.preventDefault();
+        fetch(
+            'http://localhost:3306/api/v1/account/register',
+            {
+                method: 'POST',
+                body: JSON.stringify(requestBody),
+                url: 'http://localhost:3306',
+                headers: { 'Content-Type': 'application/json' },
+
+            }).then(response => {
+                if (response.ok) {
+                    handleRegClose();
+                    return response;
+                } else {
+                    setErrors("Email has already been registered");
+                }
+            }).catch(error => {
+                console.log(error);
+                setErrors(error)
+            });
     }
     return (
         <div>
@@ -24,6 +47,7 @@ const Login = () => {
                 <Modal.Header closeButton>
                     <Modal.Title>Sign up</Modal.Title>
                 </Modal.Header>
+                {(error != "") ? (<div className="error">{error}</div>) : ""}
                 <Modal.Body>
                     <Form>
                         <Form.Group controlId="formBasicEmail">

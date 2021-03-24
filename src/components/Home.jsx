@@ -1,6 +1,6 @@
 import React, { useState, Component, Select, useEffect, useCallback } from 'react';
 import AsyncSelect from 'react-select/async';
-import { Form, Container, Col, Button } from 'react-bootstrap';
+import { Form, Container, Col, Button, DropdownButton, Dropdown } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
 import '../css/Home.css';
 export default function Home(props) {
@@ -56,39 +56,37 @@ export default function Home(props) {
         event.preventDefault();
         setEmail(event.target.value);
     }
-    const requestBody = JSON.stringify({
-        data: {
-            coinTypes: selectedCoin,
-            method: selectedMethod,
-            price: price,
-            exchange: selectedExchange,
-            email: email
-        }
-    });
-    const handleSubmit = () => {
+    const requestBody =
+    {
+        coinType: selectedCoin.name,
+        method: selectedMethod.name,
+        price: price,
+        exchange: selectedExchange.name,
+        email: email
+    }
+    const handleSubmit = useCallback(() => {
         console.log("price" + price);
         fetch(
-            '/api/v1/my_shop/export_jobs',
+            'http://localhost:8080/api/v1/price/submit',
             {
                 method: 'POST',
                 body: JSON.stringify(requestBody),
-                credentials: "include",
-                headers: { 'Content-Type': 'application/json' }
+                url: 'http://localhost:8080',
+                headers: { 'Content-Type': 'application/json' },
+
             }).then(response => {
-                if (!response.ok) { throw response }
-                return response.json()
-            }).catch((response) => {
-                response.json().then(body => {
-                    if (body.errors) {
-                        setErrors(body.errors)
-                    }
-                });
+                return response;
+            }).catch(error => {
+                setErrors(error)
             });
-    }
+    })
     const fetchCoinList = () => {
         return fetch(`https://6043fea2a20ace001728e9b7.mockapi.io/api/v1/coinlist/coinlist`).then(res => res.json());
     }
+    const fetchMethodList = () => {
+        return fetch(`http://localhost:8080/api/v1/price/method`).then(res => res.json());
 
+    }
 
     return (
 
@@ -143,9 +141,9 @@ export default function Home(props) {
                                     defaultOptions
                                     onChange={handleMethodChange}
                                     value={selectedMethod}
-                                    loadOptions={fetchCoinList}
-                                    getOptionValue={option => option.id}
-                                    getOptionLabel={option => option.name}
+                                    loadOptions={fetchMethodList}
+                                    getOptionValue={option => option.method}
+                                    getOptionLabel={option => option.method}
                                     styles={customStyles}
                                     theme={theme => ({
                                         ...theme,
@@ -162,7 +160,6 @@ export default function Home(props) {
                                         },
                                     })}
                                 />
-
                             </Col>
                             <Col xs="auto"><Form.Text className="normalText">of price</Form.Text></Col>
                             <Col xs="auto"> <Form.Control className="smaller-input" htmlSize="10" size="sm" type="text" placeholder="price number" onChange={handlePriceChange} /></Col>
