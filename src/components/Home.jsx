@@ -1,5 +1,6 @@
-import React, { useState, Component, Select, useEffect, useCallback } from 'react';
+import React, { useState, Component, useEffect, useCallback, componentDidMount } from 'react';
 import AsyncSelect from 'react-select/async';
+import Select, { createFilter } from 'react-windowed-select';
 import { Form, Container, Col, Button, DropdownButton, Dropdown } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
 import '../css/Home.css';
@@ -12,15 +13,24 @@ export default function Home(props) {
     const [price, setPrice] = useState("");
     const [email, setEmail] = useState("");
     const [errors, setErrors] = useState("");
+    const [coinOptions, setCoinOptions] = useState([]);
+    const [methodOptions, setMethodOptions] = useState([]);
+    const [inputValue, setInputValue] = useState("");
+
     const customStyles = {
         control: base => ({
             ...base,
             height: 34,
             minHeight: 27,
             maxHeight: 34,
-            width: 110,
+            width: 140,
             textAlign: "50",
             fontSize: 14,
+        }),
+        theme: theme => ({
+            ...theme.colors,
+            primary25: 'black',
+            primary: 'black',
         }),
         dropdownIndicator: base => ({
             ...base,
@@ -36,7 +46,6 @@ export default function Home(props) {
             paddingLeft: 27,
         })
     };
-
 
     const handleCoinChange = useCallback((coin_id) => {
         setSelectedCoin(coin_id);
@@ -64,6 +73,28 @@ export default function Home(props) {
         exchange: selectedExchange.name,
         email: email
     }
+    // useEffect(() => {
+    //     const timeoutId = setTimeout(() => setLoad(false), 500);
+    //     setLoad(true);
+    //     return () => clearTimeout(timeoutId);
+    // }, [inputValue]);
+    const response = () => {
+        fetch(`http://localhost:8080/api/v1/price/coinslist`).then(res => res.json()).then(
+            (result) => {
+                setCoinOptions(result);
+            }
+        )
+        fetch(`http://localhost:8080/api/v1/price/method`).then(res => res.json()).then(
+            (result) => {
+                setMethodOptions(result);
+            }
+        )
+    }
+    useEffect(() => {
+        response();
+    }, [])
+
+
     const handleSubmit = useCallback(() => {
         console.log("price" + price);
         fetch(
@@ -80,9 +111,18 @@ export default function Home(props) {
                 setErrors(error)
             });
     })
-    const fetchCoinList = () => {
-        return fetch(`https://6043fea2a20ace001728e9b7.mockapi.io/api/v1/coinlist/coinlist`).then(res => res.json());
+    const fetchCoinList = useCallback((input) => {
+
+        if (input == "") {
+            return fetch(`http://localhost:8080/api/v1/price/coinslist`).then(res => res.json());
+        } else {
+            return fetch(`http://localhost:8080/api/v1/price/coinslist/${input}`).then(res => res.json());
+        }
     }
+    )
+
+
+
     const fetchMethodList = () => {
         return fetch(`http://localhost:8080/api/v1/price/method`).then(res => res.json());
 
@@ -104,16 +144,17 @@ export default function Home(props) {
                         <Form.Row className="row-space">
 
                             <Col lg="auto" ><Form.Text className="normalText">send me alert when</Form.Text></Col>
-                            <Col md="auto">
-                                <AsyncSelect
-                                    cacheOptions
-                                    defaultOptions
-                                    onChange={handleCoinChange}
-                                    value={selectedCoin}
-                                    loadOptions={fetchCoinList}
-                                    getOptionValue={option => option.id}
+                            <Col md="auto" className="typer">
+                                <Select
+                                    className="basic-single"
+                                    classNamePrefix="select"
+                                    autocomplete
+                                    name="color"
+                                    options={coinOptions.slice(0, 100)}
+                                    getOptionValue={option => option.name}
                                     getOptionLabel={option => option.name}
                                     styles={customStyles}
+                                    filterOption={createFilter({ ignoreAccents: false })}
                                     theme={theme => ({
                                         ...theme,
                                         borderRadius: 0,
@@ -125,7 +166,6 @@ export default function Home(props) {
                                             neutral0: '#434c5f',
                                             neutral80: 'white',
                                             neutral90: 'white',
-
                                         },
                                     })}
                                 />
@@ -136,12 +176,12 @@ export default function Home(props) {
 
                         <Form.Row className="row-space">
                             <Col xs="auto">
-                                <AsyncSelect
+                                <Select
                                     cacheOptions
                                     defaultOptions
                                     onChange={handleMethodChange}
                                     value={selectedMethod}
-                                    loadOptions={fetchMethodList}
+                                    options={methodOptions}
                                     getOptionValue={option => option.method}
                                     getOptionLabel={option => option.method}
                                     styles={customStyles}
@@ -168,14 +208,15 @@ export default function Home(props) {
                         <Form.Row className="row-space">
                             <Col xs="auto"><Form.Text className="normalText">on</Form.Text></Col>
                             <Col xs="auto">
-                                <AsyncSelect
+
+                                <Select
                                     cacheOptions
                                     defaultOptions
-                                    onChange={handleExchangeChange}
-                                    value={selectedExchange}
-                                    loadOptions={fetchCoinList}
-                                    getOptionValue={option => option.id}
-                                    getOptionLabel={option => option.name}
+                                    onChange={handleMethodChange}
+                                    value={selectedMethod}
+                                    options={methodOptions}
+                                    getOptionValue={option => option.method}
+                                    getOptionLabel={option => option.method}
                                     styles={customStyles}
                                     theme={theme => ({
                                         ...theme,
