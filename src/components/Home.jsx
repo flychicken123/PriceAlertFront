@@ -15,7 +15,8 @@ export default function Home(props) {
     const [errors, setErrors] = useState("");
     const [coinOptions, setCoinOptions] = useState([]);
     const [methodOptions, setMethodOptions] = useState([]);
-    const [inputValue, setInputValue] = useState("");
+    const [exchangeOptions, setExchangeOptions] = useState([]);
+
 
     const customStyles = {
         control: base => ({
@@ -32,10 +33,10 @@ export default function Home(props) {
             primary25: 'black',
             primary: 'black',
         }),
-        dropdownIndicator: base => ({
-            ...base,
-            display: "none"
-        }),
+        // dropdownIndicator: base => ({
+        //     ...base,
+        //     display: "none"
+        // }),
         indicatorSeparator: base => ({
             ...base,
             display: "none"
@@ -43,7 +44,7 @@ export default function Home(props) {
         valueContainer: base => ({
             ...base,
             bottom: 5,
-            paddingLeft: 27,
+            paddingLeft: 20,
         })
     };
 
@@ -68,9 +69,9 @@ export default function Home(props) {
     const requestBody =
     {
         coinType: selectedCoin.name,
-        method: selectedMethod.name,
+        method: selectedMethod.method,
         price: price,
-        exchange: selectedExchange.name,
+        exchange: selectedExchange.exchange,
         email: email
     }
     // useEffect(() => {
@@ -87,6 +88,11 @@ export default function Home(props) {
         fetch(`http://localhost:8080/api/v1/price/method`).then(res => res.json()).then(
             (result) => {
                 setMethodOptions(result);
+            }
+        )
+        fetch(`http://localhost:8080/api/v1/price/allExchanges`).then(res => res.json()).then(
+            (result) => {
+                setExchangeOptions(result);
             }
         )
     }
@@ -150,7 +156,9 @@ export default function Home(props) {
                                     classNamePrefix="select"
                                     autocomplete
                                     name="color"
-                                    options={coinOptions.slice(0, 100)}
+                                    options={coinOptions.slice(0, 300)}
+                                    onChange={handleCoinChange}
+                                    value={selectedCoin}
                                     getOptionValue={option => option.name}
                                     getOptionLabel={option => option.name}
                                     styles={customStyles}
@@ -212,11 +220,11 @@ export default function Home(props) {
                                 <Select
                                     cacheOptions
                                     defaultOptions
-                                    onChange={handleMethodChange}
-                                    value={selectedMethod}
-                                    options={methodOptions}
-                                    getOptionValue={option => option.method}
-                                    getOptionLabel={option => option.method}
+                                    onChange={handleExchangeChange}
+                                    value={selectedExchange}
+                                    options={exchangeOptions}
+                                    getOptionValue={option => option.id}
+                                    getOptionLabel={option => option.exchange}
                                     styles={customStyles}
                                     theme={theme => ({
                                         ...theme,
