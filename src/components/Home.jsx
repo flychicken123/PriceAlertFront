@@ -71,7 +71,7 @@ export default function Home(props) {
         coinType: selectedCoin.name,
         method: selectedMethod.method,
         price: price,
-        exchange: selectedExchange.exchange,
+        exchange: selectedExchange.id,
         email: email
     }
     // useEffect(() => {
@@ -80,17 +80,17 @@ export default function Home(props) {
     //     return () => clearTimeout(timeoutId);
     // }, [inputValue]);
     const response = () => {
-        fetch(`http://localhost:8080/api/v1/price/coinslist`).then(res => res.json()).then(
+        fetch(`http://pricealertbacklocal-env.eba-qiwufekn.us-east-1.elasticbeanstalk.com/api/v1/price/coinslist`).then(res => res.json()).then(
             (result) => {
                 setCoinOptions(result);
             }
         )
-        fetch(`http://localhost:8080/api/v1/price/method`).then(res => res.json()).then(
+        fetch(`http://pricealertbacklocal-env.eba-qiwufekn.us-east-1.elasticbeanstalk.com/api/v1/price/method`).then(res => res.json()).then(
             (result) => {
                 setMethodOptions(result);
             }
         )
-        fetch(`http://localhost:8080/api/v1/price/allExchanges`).then(res => res.json()).then(
+        fetch(`http://pricealertbacklocal-env.eba-qiwufekn.us-east-1.elasticbeanstalk.com/api/v1/price/allExchanges`).then(res => res.json()).then(
             (result) => {
                 setExchangeOptions(result);
             }
@@ -104,7 +104,7 @@ export default function Home(props) {
     const handleSubmit = useCallback(() => {
         console.log("price" + price);
         fetch(
-            'http://localhost:8080/api/v1/price/submit',
+            'http://pricealertbacklocal-env.eba-qiwufekn.us-east-1.elasticbeanstalk.com/api/v1/price/submit',
             {
                 method: 'POST',
                 body: JSON.stringify(requestBody),
@@ -120,9 +120,9 @@ export default function Home(props) {
     const fetchCoinList = useCallback((input) => {
 
         if (input == "") {
-            return fetch(`http://localhost:8080/api/v1/price/coinslist`).then(res => res.json());
+            return fetch(`http://pricealertbacklocal-env.eba-qiwufekn.us-east-1.elasticbeanstalk.com/api/v1/price/coinslist`).then(res => res.json());
         } else {
-            return fetch(`http://localhost:8080/api/v1/price/coinslist/${input}`).then(res => res.json());
+            return fetch(`http://pricealertbacklocal-env.eba-qiwufekn.us-east-1.elasticbeanstalk.com/api/v1/price/coinslist/${input}`).then(res => res.json());
         }
     }
     )
