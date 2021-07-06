@@ -80,17 +80,17 @@ export default function Home(props) {
     //     return () => clearTimeout(timeoutId);
     // }, [inputValue]);
     const response = () => {
-        fetch(`http://pricealertbacklocal-env.eba-qiwufekn.us-east-1.elasticbeanstalk.com/api/v1/price/coinslist`).then(res => res.json()).then(
+        fetch(`https://pricealertback.azurewebsites.net/api/v1/price/coinslist`).then(res => res.json()).then(
             (result) => {
                 setCoinOptions(result);
             }
         )
-        fetch(`http://pricealertbacklocal-env.eba-qiwufekn.us-east-1.elasticbeanstalk.com/api/v1/price/method`).then(res => res.json()).then(
+        fetch(`https://pricealertback.azurewebsites.net/api/v1/price/method`).then(res => res.json()).then(
             (result) => {
                 setMethodOptions(result);
             }
         )
-        fetch(`http://pricealertbacklocal-env.eba-qiwufekn.us-east-1.elasticbeanstalk.com/api/v1/price/allExchanges`).then(res => res.json()).then(
+        fetch(`https://pricealertback.azurewebsites.net/api/v1/price/allExchanges`).then(res => res.json()).then(
             (result) => {
                 setExchangeOptions(result);
             }
@@ -104,11 +104,11 @@ export default function Home(props) {
     const handleSubmit = useCallback(() => {
         console.log("price" + price);
         fetch(
-            'http://pricealertbacklocal-env.eba-qiwufekn.us-east-1.elasticbeanstalk.com/api/v1/price/submit',
+            'https://pricealertback.azurewebsites.net/api/v1/price/submit',
             {
                 method: 'POST',
                 body: JSON.stringify(requestBody),
-                url: 'http://localhost:8080',
+                url: 'https://pricealertback.azurewebsites.net/',
                 headers: { 'Content-Type': 'application/json' },
 
             }).then(response => {
@@ -120,9 +120,9 @@ export default function Home(props) {
     const fetchCoinList = useCallback((input) => {
 
         if (input == "") {
-            return fetch(`http://pricealertbacklocal-env.eba-qiwufekn.us-east-1.elasticbeanstalk.com/api/v1/price/coinslist`).then(res => res.json());
+            return fetch(`https://pricealertback.azurewebsites.net/api/v1/price/coinslist`).then(res => res.json());
         } else {
-            return fetch(`http://pricealertbacklocal-env.eba-qiwufekn.us-east-1.elasticbeanstalk.com/api/v1/price/coinslist/${input}`).then(res => res.json());
+            return fetch(`https://pricealertback.azurewebsites.net//api/v1/price/coinslist/${input}`).then(res => res.json());
         }
     }
     )
