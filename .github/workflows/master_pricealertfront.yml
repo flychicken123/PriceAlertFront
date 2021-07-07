@@ -34,6 +34,6 @@ jobs:
       with:
         app-name: PriceAlertFront
         slot-name: Production
-        publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_90570CC519CF4905B48E69FC16E27C32 }}
+        publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_9DE73289CA844C598682537E3A829490 }}
         package: .
 
