@@ -223,7 +223,7 @@ export default function Home(props) {
                                     onChange={handleExchangeChange}
                                     value={selectedExchange}
                                     options={exchangeOptions}
-                                    getOptionValue={option => option.id}
+                                    getOptionValue={option => option.exchange}
                                     getOptionLabel={option => option.exchange}
                                     styles={customStyles}
                                     theme={theme => ({

@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/9157f3ce-0f87-4705-96e9-5f265f32f9ab/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/priceAlertVSLocal",
+    "appService.deploySubpath": "."
+}
