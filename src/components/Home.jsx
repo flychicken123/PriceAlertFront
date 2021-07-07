@@ -122,7 +122,7 @@ export default function Home(props) {
         if (input == "") {
             return fetch(`https://pricealertback.azurewebsites.net/api/v1/price/coinslist`).then(res => res.json());
         } else {
-            return fetch(`https://pricealertback.azurewebsites.net//api/v1/price/coinslist/${input}`).then(res => res.json());
+            return fetch(`https://pricealertback.azurewebsites.net/api/v1/price/coinslist/${input}`).then(res => res.json());
         }
     }
     )

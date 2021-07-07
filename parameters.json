@@ -1,0 +1,33 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "subscriptionId": {
+            "value": "9157f3ce-0f87-4705-96e9-5f265f32f9ab"
+        },
+        "name": {
+            "value": "PriceAlertFront"
+        },
+        "location": {
+            "value": "Central US"
+        },
+        "hostingPlanName": {
+            "value": "ASP-test-9fef"
+        },
+        "serverFarmResourceGroup": {
+            "value": "test"
+        },
+        "alwaysOn": {
+            "value": false
+        },
+        "linuxFxVersion": {
+            "value": "NODE|12-lts"
+        },
+        "repoUrl": {
+            "value": "https://github.com/flychicken123/PriceAlertFront"
+        },
+        "branch": {
+            "value": "master"
+        }
+    }
+}
