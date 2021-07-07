@@ -57,7 +57,6 @@ const TopNavbar = () => {
                             )
 
                         } else {
-                            console.log("is not sign ")
                             return (
                                 <Form inline>
                                     <Login onButtonClick={LoginIn} />
