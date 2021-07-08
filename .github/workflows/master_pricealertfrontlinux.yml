@@ -26,11 +26,9 @@ jobs:
 
     - name: npm install, build, and test
       run: |
-        npm install --only=dev && npm install && npm run build
+        npm install --only=dev && npm install
         npm run build --if-present
         npm run test --if-present
-        npm install -g serve
-        serve -s build
     - name: Run Azure webapp deploy action using publish profile credentials
       uses: azure/webapps-deploy@v2
       with:
