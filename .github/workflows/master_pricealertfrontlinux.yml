@@ -7,6 +7,8 @@ on:
   push:
     branches:
       - master
+env:
+  AZURE_WEBAPP_PACKAGE_PATH: 'build'  # set this to the path to your web app project, defaults to the repository root
 
 
 jobs:
@@ -35,4 +37,4 @@ jobs:
         app-name: PriceAlertFrontLinux
         slot-name: Production
         publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_26F8169FD8A94B7AB64E1D4DFE1C9832 }}
-        package: .
+        package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
