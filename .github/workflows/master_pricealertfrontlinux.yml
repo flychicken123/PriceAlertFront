@@ -38,5 +38,4 @@ jobs:
         app-name: PriceAlertFrontLinux
         slot-name: Production
         publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_26F8169FD8A94B7AB64E1D4DFE1C9832 }}
-        app_artifact_location: 'build'
         package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
