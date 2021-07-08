@@ -33,7 +33,7 @@ const Login = ({ onButtonClick }) => {
                 <Modal.Header closeButton>
                     <Modal.Title>Login</Modal.Title>
                 </Modal.Header>
-                {(error != "") ? (<div className="error">not match</div>) : ""}
+                {(error !== "") ? (<div className="error">not match</div>) : ""}
                 <Modal.Body>
                     <Form>
                         <Form.Group controlId="formBasicEmail">
@@ -51,7 +51,7 @@ const Login = ({ onButtonClick }) => {
                 <Modal.Footer>
                     <Button variant="primary" onClick={handleSubmit} disabled={!validateForm()} >
                         Login
-                             </Button>
+                    </Button>
                 </Modal.Footer>
             </Modal>
         </div>
