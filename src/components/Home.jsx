@@ -253,7 +253,7 @@ export default function Home(props) {
                             <Col xs="auto"> <Form.Control className="smaller-input" htmlSize="50" size="sm" type="text" placeholder="Your email address" onChange={handleEmailChange} /></Col>
                         </Form.Row>
                         <Button variant="secondary" onClick={handleSubmit}>Submit</Button>
-                        <Modal show={show} onHide={handleClose}>
+                        <Modal className="my-modal" show={show} onHide={handleClose}>
                             <Modal.Header closeButton>
                                 <Modal.Title>Success Submit Alert</Modal.Title>
                             </Modal.Header>

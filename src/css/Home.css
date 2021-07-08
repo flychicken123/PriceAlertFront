@@ -15,3 +15,7 @@
   .row-space{
     margin: 12px;
   }
+  .my-modal .modal-content {
+    background-color: #434c5f;
+    color: white;
+  }
