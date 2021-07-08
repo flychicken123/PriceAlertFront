@@ -3,6 +3,7 @@ import AsyncSelect from 'react-select/async';
 import Select, { createFilter } from 'react-windowed-select';
 import { Form, Container, Col, Button, DropdownButton, Dropdown } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
+import Popup from 'reactjs-popup';
 import '../css/Home.css';
 export default function Home(props) {
 
@@ -80,7 +81,7 @@ export default function Home(props) {
     //     return () => clearTimeout(timeoutId);
     // }, [inputValue]);
     const response = () => {
-        fetch(`https://pricealertback.azurewebsites.net/api/v1/price/coinslist`).then(res => res.json()).then(
+        fetch(`http://localhost:5000/api/v1/price/coinslist`).then(res => res.json()).then(
             (result) => {
                 setCoinOptions(result);
             }
@@ -249,7 +250,10 @@ export default function Home(props) {
                         <Form.Row className="row-space">
                             <Col xs="auto"> <Form.Control className="smaller-input" htmlSize="50" size="sm" type="text" placeholder="Your email address" onChange={handleEmailChange} /></Col>
                         </Form.Row>
-                        <Button variant="secondary" onClick={handleSubmit}>Submit</Button>
+                        <Popup trigger={<Button variant="secondary" onClick={handleSubmit}>Submit</Button>}>
+                            <div>Your alert has been setup! An email has been sent it to you, you might need to check your junk mailbox</div>
+                        </Popup>
+
                     </Form>
 
                 </div>

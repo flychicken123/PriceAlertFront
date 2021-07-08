@@ -19,6 +19,7 @@
     "react-scripts": "4.0.2",
     "react-select": "^4.3.0",
     "react-windowed-select": "^3.0.0",
+    "reactjs-popup": "^2.0.5",
     "web-vitals": "^1.0.1"
   },
   "scripts": {
