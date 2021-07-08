@@ -81,7 +81,7 @@ export default function Home(props) {
     //     return () => clearTimeout(timeoutId);
     // }, [inputValue]);
     const response = () => {
-        fetch(`http://localhost:5000/api/v1/price/coinslist`).then(res => res.json()).then(
+        fetch(`https://pricealertback.azurewebsites.net/api/v1/price/coinslist`).then(res => res.json()).then(
             (result) => {
                 setCoinOptions(result);
             }
@@ -131,7 +131,7 @@ export default function Home(props) {
 
 
     const fetchMethodList = () => {
-        return fetch(`http://localhost:8080/api/v1/price/method`).then(res => res.json());
+        return fetch(`https://pricealertback.azurewebsites.net/api/v1/price/method`).then(res => res.json());
 
     }
 
@@ -250,9 +250,8 @@ export default function Home(props) {
                         <Form.Row className="row-space">
                             <Col xs="auto"> <Form.Control className="smaller-input" htmlSize="50" size="sm" type="text" placeholder="Your email address" onChange={handleEmailChange} /></Col>
                         </Form.Row>
-                        <Popup trigger={<Button variant="secondary" onClick={handleSubmit}>Submit</Button>}>
-                            <div>Your alert has been setup! An email has been sent it to you, you might need to check your junk mailbox</div>
-                        </Popup>
+                        <Button variant="secondary" onClick={handleSubmit}>Submit</Button>
+
 
                     </Form>
 
