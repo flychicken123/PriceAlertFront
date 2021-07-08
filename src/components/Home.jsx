@@ -1,7 +1,7 @@
 import React, { useState, Component, useEffect, useCallback, componentDidMount } from 'react';
 import AsyncSelect from 'react-select/async';
 import Select, { createFilter } from 'react-windowed-select';
-import { Form, Container, Col, Button, DropdownButton, Dropdown } from 'react-bootstrap';
+import { Form, Container, Col, Button, DropdownButton, Dropdown, Modal } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
 import Popup from 'reactjs-popup';
 import '../css/Home.css';
@@ -17,8 +17,9 @@ export default function Home(props) {
     const [coinOptions, setCoinOptions] = useState([]);
     const [methodOptions, setMethodOptions] = useState([]);
     const [exchangeOptions, setExchangeOptions] = useState([]);
+    const [show, setShow] = useState(false);
 
-
+    const handleClose = () => setShow(false);
     const customStyles = {
         control: base => ({
             ...base,
@@ -104,6 +105,7 @@ export default function Home(props) {
 
     const handleSubmit = useCallback(() => {
         console.log("price" + price);
+        setShow(true);
         fetch(
             'https://pricealertback.azurewebsites.net/api/v1/price/submit',
             {
@@ -251,7 +253,17 @@ export default function Home(props) {
                             <Col xs="auto"> <Form.Control className="smaller-input" htmlSize="50" size="sm" type="text" placeholder="Your email address" onChange={handleEmailChange} /></Col>
                         </Form.Row>
                         <Button variant="secondary" onClick={handleSubmit}>Submit</Button>
-
+                        <Modal show={show} onHide={handleClose}>
+                            <Modal.Header closeButton>
+                                <Modal.Title>Success Submit Alert</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>Woohoo, your alert has been success setup. You should get an email of it. If you don't get, please check your junk mailbox</Modal.Body>
+                            <Modal.Footer>
+                                <Button variant="primary" onClick={handleClose}>
+                                    Close
+                                </Button>
+                            </Modal.Footer>
+                        </Modal>
 
                     </Form>
 
