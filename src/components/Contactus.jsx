@@ -9,7 +9,7 @@ const Contactus = () => {
             <Helmet>
                 <style>{'body { background-color: #434c5f;text-align: center; padding: 20px;color: white; }'}</style>
             </Helmet>
-            Email: flychicken2008@gmail.com</div>
+            Email: tactechllc@gmail.com</div>
     )
 };
 export default Contactus
