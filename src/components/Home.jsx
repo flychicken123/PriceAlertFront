@@ -82,17 +82,17 @@ export default function Home(props) {
     //     return () => clearTimeout(timeoutId);
     // }, [inputValue]);
     const response = () => {
-        fetch(`https://pricealertback.azurewebsites.net/api/v1/price/coinslist`).then(res => res.json()).then(
+        fetch(`http://localhost:5000/api/v1/price/coinslist`).then(res => res.json()).then(
             (result) => {
                 setCoinOptions(result);
             }
         )
-        fetch(`https://pricealertback.azurewebsites.net/api/v1/price/method`).then(res => res.json()).then(
+        fetch(`http://localhost:5000/api/v1/price/method`).then(res => res.json()).then(
             (result) => {
                 setMethodOptions(result);
             }
         )
-        fetch(`https://pricealertback.azurewebsites.net/api/v1/price/allExchanges`).then(res => res.json()).then(
+        fetch(`http://localhost:5000/api/v1/price/allExchanges`).then(res => res.json()).then(
             (result) => {
                 setExchangeOptions(result);
             }
@@ -107,11 +107,11 @@ export default function Home(props) {
         console.log("price" + price);
         setShow(true);
         fetch(
-            'https://pricealertback.azurewebsites.net/api/v1/price/submit',
+            'http://localhost:5000/api/v1/price/submit',
             {
                 method: 'POST',
                 body: JSON.stringify(requestBody),
-                url: 'https://pricealertback.azurewebsites.net/',
+                url: 'http://localhost:5000/',
                 headers: { 'Content-Type': 'application/json' },
 
             }).then(response => {
@@ -122,7 +122,7 @@ export default function Home(props) {
     })
     const fetchCoinList = useCallback((input) => {
 
-        if (input == "") {
+        if (input === "") {
             return fetch(`https://pricealertback.azurewebsites.net/api/v1/price/coinslist`).then(res => res.json());
         } else {
             return fetch(`https://pricealertback.azurewebsites.net/api/v1/price/coinslist/${input}`).then(res => res.json());
