@@ -17,9 +17,24 @@ export default function Home(props) {
     const [coinOptions, setCoinOptions] = useState([]);
     const [methodOptions, setMethodOptions] = useState([]);
     const [exchangeOptions, setExchangeOptions] = useState([]);
+    const [form, setForm] = useState({})
+    const [formErrors, setFormErrors] = useState({})
     const [show, setShow] = useState(false);
 
     const handleClose = () => setShow(false);
+    const findFormErrors = () => {
+
+        const newErrors = {}
+        // name errors
+        if (!selectedCoin || selectedCoin === '') newErrors.coin = 'select cannot be blank!'
+        // food errors
+        if (!price || price === '') newErrors.price = 'field cannot be blank!'
+        // rating errors
+        if (!email || email === '') newErrors.email = 'field cannot be blank'
+        if (!selectedMethod || selectedMethod === '') newErrors.selectedMethod = 'select cannot be blank'
+        if (!selectedExchange || selectedExchange === '') newErrors.selectedExchange = 'select cannot be blank'
+        return newErrors
+    }
     const customStyles = {
         control: base => ({
             ...base,
@@ -52,21 +67,30 @@ export default function Home(props) {
 
     const handleCoinChange = useCallback((coin_id) => {
         setSelectedCoin(coin_id);
-        console.log(coin_id.name);
-    }, []);
+        if (!!formErrors.coin)
+            formErrors.coin = ''
+    });
     const handleExchangeChange = useCallback((exchange_id) => {
         setSelectedExchange(exchange_id);
+        if (!!formErrors.selectedExchange)
+            formErrors.selectedExchange = ''
     })
     const handleMethodChange = useCallback((method_id) => {
         setSelectedMethod(method_id);
+        if (!!formErrors.selectedMethod)
+            formErrors.selectedMethod = ''
     })
     const handlePriceChange = (event) => {
         event.preventDefault();
         setPrice(event.target.value);
+        if (!!formErrors.price)
+            formErrors.price = ''
     }
     const handleEmailChange = (event) => {
         event.preventDefault();
         setEmail(event.target.value);
+        if (!!formErrors.email)
+            formErrors.email = ''
     }
     const requestBody =
     {
@@ -104,21 +128,27 @@ export default function Home(props) {
 
 
     const handleSubmit = useCallback(() => {
-        console.log("price" + price);
-        setShow(true);
-        fetch(
-            'https://pricealertback.azurewebsites.net/api/v1/price/submit',
-            {
-                method: 'POST',
-                body: JSON.stringify(requestBody),
-                url: 'https://pricealertback.azurewebsites.net/',
-                headers: { 'Content-Type': 'application/json' },
+        const newErrors = findFormErrors()
+        if (Object.keys(newErrors).length > 0) {
+            // We got errors!
+            setFormErrors(newErrors)
+        } else {
+            setShow(true);
+            fetch(
+                'https://pricealertback.azurewebsites.net/api/v1/price/submit',
+                {
+                    method: 'POST',
+                    body: JSON.stringify(requestBody),
+                    url: 'https://pricealertback.azurewebsites.net/',
+                    headers: { 'Content-Type': 'application/json' },
 
-            }).then(response => {
-                return response;
-            }).catch(error => {
-                setErrors(error)
-            });
+                }).then(response => {
+                    return response;
+                }).catch(error => {
+                    setErrors(error)
+                });
+        }
+
     })
     const fetchCoinList = useCallback((input) => {
 
@@ -157,6 +187,8 @@ export default function Home(props) {
                                 <Select
                                     className="basic-single"
                                     classNamePrefix="select"
+                                    id="validationCustom04"
+                                    required
                                     autocomplete
                                     name="color"
                                     options={coinOptions.slice(0, 300)}
@@ -180,16 +212,22 @@ export default function Home(props) {
                                         },
                                     })}
                                 />
+                                {!!formErrors.coin && (
+                                    <div>
+                                        <span className="text-danger" style={{ fontSize: 15 }} >{formErrors.coin}</span>
+                                    </div>
+                                )}
                             </Col>
                             <Col xs="auto"><Form.Text className="normalText">price</Form.Text></Col>
 
                         </Form.Row>
 
-                        <Form.Row className="row-space">
+                        <Form.Row className="row-space" >
                             <Col xs="auto">
                                 <Select
                                     cacheOptions
                                     defaultOptions
+                                    isInvalid={!!formErrors.selectedMethod}
                                     onChange={handleMethodChange}
                                     value={selectedMethod}
                                     options={methodOptions}
@@ -211,9 +249,17 @@ export default function Home(props) {
                                         },
                                     })}
                                 />
+                                {!!formErrors.selectedMethod && (
+                                    <div>
+                                        <span className="text-danger" style={{ fontSize: 15 }}>{formErrors.selectedMethod}</span>
+                                    </div>
+                                )}
                             </Col>
                             <Col xs="auto"><Form.Text className="normalText">of price</Form.Text></Col>
-                            <Col xs="auto"> <Form.Control className="smaller-input" htmlSize="10" size="sm" type="text" placeholder="price number" onChange={handlePriceChange} /></Col>
+                            <Col xs="auto"> <Form.Control isInvalid={!!formErrors.price} className="smaller-input" htmlSize="10" size="sm" type="text" placeholder="price number" onChange={handlePriceChange} />
+                                <Form.Control.Feedback type='invalid'>
+                                    {formErrors.price}
+                                </Form.Control.Feedback></Col>
                             <Col xs="auto"><Form.Text className="normalText">USD</Form.Text></Col>
                         </Form.Row>
                         <Form.Row className="row-space">
@@ -244,13 +290,22 @@ export default function Home(props) {
                                         },
                                     })}
                                 />
+                                {!!formErrors.selectedExchange && (
+                                    <div>
+                                        <span className="text-danger" style={{ fontSize: 15 }}>{formErrors.selectedExchange}</span>
+                                    </div>
+                                )}
                             </Col>
                             <Col xs="auto"><Form.Text className="normalText">with email</Form.Text></Col>
 
 
                         </Form.Row>
                         <Form.Row className="row-space">
-                            <Col xs="auto"> <Form.Control className="smaller-input" htmlSize="50" size="sm" type="text" placeholder="Your email address" onChange={handleEmailChange} /></Col>
+                            <Col xs="auto"> <Form.Control isInvalid={!!formErrors.email} className="smaller-input" htmlSize="50" size="sm" type="text" placeholder="Your email address" onChange={handleEmailChange} />
+                                <Form.Control.Feedback type='invalid'>
+                                    {formErrors.email}
+                                </Form.Control.Feedback>
+                            </Col>
                         </Form.Row>
                         <Button variant="secondary" onClick={handleSubmit}>Submit</Button>
                         <Modal className="my-modal" show={show} onHide={handleClose}>
