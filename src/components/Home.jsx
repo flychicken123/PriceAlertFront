@@ -19,6 +19,7 @@ export default function Home(props) {
     const [exchangeOptions, setExchangeOptions] = useState([]);
     const [form, setForm] = useState({})
     const [formErrors, setFormErrors] = useState({})
+    const [showPercent, setShowPercent] = useState(false);
     const [show, setShow] = useState(false);
 
     const handleClose = () => setShow(false);
@@ -64,7 +65,24 @@ export default function Home(props) {
             paddingLeft: 20,
         })
     };
-
+    const changeMethod = () => {
+        if (showPercent) {
+            return [<Col xs="auto"><Form.Text className="normalText">on</Form.Text></Col>,
+            <Col xs="auto"> <Form.Control className="smaller-input" htmlSize="10" size="sm" type="text" placeholder="1-100" onChange={handlePriceChange} />
+                <Form.Control.Feedback type='invalid'>
+                    {formErrors.price}
+                </Form.Control.Feedback></Col>,
+            <Col xs="auto"><Form.Text className="normalText">percent(%)</Form.Text></Col>
+            ]
+        } else {
+            return [<Col xs="auto"><Form.Text className="normalText">of price</Form.Text></Col>,
+            <Col xs="auto"> <Form.Control isInvalid={!!formErrors.price} className="smaller-input" htmlSize="10" size="sm" type="text" placeholder="price number" onChange={handlePriceChange} />
+                <Form.Control.Feedback type='invalid'>
+                    {formErrors.price}
+                </Form.Control.Feedback></Col>,
+            <Col xs="auto"><Form.Text className="normalText">USD</Form.Text></Col>]
+        }
+    }
     const handleCoinChange = useCallback((coin_id) => {
         setSelectedCoin(coin_id);
         if (!!formErrors.coin)
@@ -77,6 +95,7 @@ export default function Home(props) {
     })
     const handleMethodChange = useCallback((method_id) => {
         setSelectedMethod(method_id);
+        setShowPercent(method_id.method === 'trailing stop buy' || method_id.method === 'trailing stop sell');
         if (!!formErrors.selectedMethod)
             formErrors.selectedMethod = ''
     })
@@ -100,6 +119,14 @@ export default function Home(props) {
         exchange: selectedExchange.id,
         email: email
     }
+    const requestBodyPercent =
+    {
+        coinType: selectedCoin.name,
+        method: selectedMethod.method,
+        percent: price,
+        exchange: selectedExchange.id,
+        email: email
+    }
     // useEffect(() => {
     //     const timeoutId = setTimeout(() => setLoad(false), 500);
     //     setLoad(true);
@@ -111,7 +138,7 @@ export default function Home(props) {
                 setCoinOptions(result);
             }
         )
-        fetch(`https://pricealertback.azurewebsites.net/api/v1/price/method`).then(res => res.json()).then(
+        fetch(`http://localhost:5000/api/v1/price/method`).then(res => res.json()).then(
             (result) => {
                 setMethodOptions(result);
             }
@@ -134,19 +161,35 @@ export default function Home(props) {
             setFormErrors(newErrors)
         } else {
             setShow(true);
-            fetch(
-                'https://pricealertback.azurewebsites.net/api/v1/price/submit',
-                {
-                    method: 'POST',
-                    body: JSON.stringify(requestBody),
-                    url: 'https://pricealertback.azurewebsites.net/',
-                    headers: { 'Content-Type': 'application/json' },
+            if (showPercent) {
+                fetch(
+                    'https://pricealertback.azurewebsites.net/api/v1/price/submit',
+                    {
+                        method: 'POST',
+                        body: JSON.stringify(requestBody),
+                        url: 'https://pricealertback.azurewebsites.net/',
+                        headers: { 'Content-Type': 'application/json' },
 
-                }).then(response => {
-                    return response;
-                }).catch(error => {
-                    setErrors(error)
-                });
+                    }).then(response => {
+                        return response;
+                    }).catch(error => {
+                        setErrors(error)
+                    });
+            } else {
+                fetch(
+                    'https://pricealertback.azurewebsites.net/api/v1/price/submit',
+                    {
+                        method: 'POST',
+                        body: JSON.stringify(requestBodyPercent),
+                        url: 'https://pricealertback.azurewebsites.net/',
+                        headers: { 'Content-Type': 'application/json' },
+
+                    }).then(response => {
+                        return response;
+                    }).catch(error => {
+                        setErrors(error)
+                    });
+            }
         }
 
     })
@@ -255,12 +298,11 @@ export default function Home(props) {
                                     </div>
                                 )}
                             </Col>
-                            <Col xs="auto"><Form.Text className="normalText">of price</Form.Text></Col>
-                            <Col xs="auto"> <Form.Control isInvalid={!!formErrors.price} className="smaller-input" htmlSize="10" size="sm" type="text" placeholder="price number" onChange={handlePriceChange} />
-                                <Form.Control.Feedback type='invalid'>
-                                    {formErrors.price}
-                                </Form.Control.Feedback></Col>
-                            <Col xs="auto"><Form.Text className="normalText">USD</Form.Text></Col>
+                            {
+                                changeMethod()
+
+                            }
+
                         </Form.Row>
                         <Form.Row className="row-space">
                             <Col xs="auto"><Form.Text className="normalText">on</Form.Text></Col>
