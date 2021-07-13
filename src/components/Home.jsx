@@ -166,8 +166,8 @@ export default function Home(props) {
                     'https://pricealertback.azurewebsites.net/api/v1/price/submit',
                     {
                         method: 'POST',
-                        body: JSON.stringify(requestBody),
-                        url: 'https://pricealertback.azurewebsites.net/',
+                        body: JSON.stringify(requestBodyPercent),
+                        url: 'https://pricealertback.azurewebsites.net',
                         headers: { 'Content-Type': 'application/json' },
 
                     }).then(response => {
@@ -180,7 +180,7 @@ export default function Home(props) {
                     'https://pricealertback.azurewebsites.net/api/v1/price/submit',
                     {
                         method: 'POST',
-                        body: JSON.stringify(requestBodyPercent),
+                        body: JSON.stringify(requestBody),
                         url: 'https://pricealertback.azurewebsites.net/',
                         headers: { 'Content-Type': 'application/json' },
 
