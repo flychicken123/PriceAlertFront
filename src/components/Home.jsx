@@ -138,7 +138,7 @@ export default function Home(props) {
                 setCoinOptions(result);
             }
         )
-        fetch(`http://localhost:5000/api/v1/price/method`).then(res => res.json()).then(
+        fetch(`http://pricealertback.azurewebsites.net/api/v1/price/method`).then(res => res.json()).then(
             (result) => {
                 setMethodOptions(result);
             }
