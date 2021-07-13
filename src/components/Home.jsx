@@ -138,7 +138,7 @@ export default function Home(props) {
                 setCoinOptions(result);
             }
         )
-        fetch(`http://pricealertback.azurewebsites.net/api/v1/price/method`).then(res => res.json()).then(
+        fetch(`https://pricealertback.azurewebsites.net/api/v1/price/method`).then(res => res.json()).then(
             (result) => {
                 setMethodOptions(result);
             }
@@ -300,9 +300,7 @@ export default function Home(props) {
                             </Col>
                             {
                                 changeMethod()
-
                             }
-
                         </Form.Row>
                         <Form.Row className="row-space">
                             <Col xs="auto"><Form.Text className="normalText">on</Form.Text></Col>
@@ -339,8 +337,6 @@ export default function Home(props) {
                                 )}
                             </Col>
                             <Col xs="auto"><Form.Text className="normalText">with email</Form.Text></Col>
-
-
                         </Form.Row>
                         <Form.Row className="row-space">
                             <Col xs="auto"> <Form.Control isInvalid={!!formErrors.email} className="smaller-input" htmlSize="50" size="sm" type="text" placeholder="Your email address" onChange={handleEmailChange} />
@@ -361,9 +357,7 @@ export default function Home(props) {
                                 </Button>
                             </Modal.Footer>
                         </Modal>
-
                     </Form>
-
                 </div>
             </Container>
         </div >
