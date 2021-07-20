@@ -1,6 +1,7 @@
 import React, { Component, useState, useEffect } from 'react';
 import { Button, Navbar, Nav, NavDropdown, Form, FormControl, Modal, Row, Col } from "react-bootstrap";
 import '../css/TopNavBar.css';
+import { ACCESS_TOKEN, Email } from '../constants/const.jsx';
 import Login from './Login.jsx';
 import SignUp from './Signup.jsx';
 const TopNavbar = () => {
@@ -13,11 +14,16 @@ const TopNavbar = () => {
     const handleLogOut = () => {
         setEmail("");
         setIsSign(false);
+        localStorage.clear();
         console.log("logout");
     }
 
     useEffect(() => {
-        if (email == "")
+        if (localStorage.getItem(Email)) {
+            setEmail(localStorage.getItem(Email));
+        }
+
+        if (email === "")
             setIsSign(false);
         else
             setIsSign(true);

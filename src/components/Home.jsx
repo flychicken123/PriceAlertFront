@@ -4,6 +4,8 @@ import Select, { createFilter } from 'react-windowed-select';
 import { Form, Container, Col, Button, DropdownButton, Dropdown, Modal } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
 import Popup from 'reactjs-popup';
+import { ACCESS_TOKEN, API_BASE_URL } from '../constants/const.jsx';
+
 import '../css/Home.css';
 export default function Home(props) {
 
@@ -21,7 +23,7 @@ export default function Home(props) {
     const [formErrors, setFormErrors] = useState({})
     const [showPercent, setShowPercent] = useState(false);
     const [show, setShow] = useState(false);
-
+    const apiUrl = 'https://pricealertback.azurewebsites.net/'
     const handleClose = () => setShow(false);
     const findFormErrors = () => {
 
@@ -34,6 +36,7 @@ export default function Home(props) {
         if (!email || email === '') newErrors.email = 'field cannot be blank'
         if (!selectedMethod || selectedMethod === '') newErrors.selectedMethod = 'select cannot be blank'
         if (!selectedExchange || selectedExchange === '') newErrors.selectedExchange = 'select cannot be blank'
+        if (!localStorage.getItem(ACCESS_TOKEN)) newErrors.login = 'please login before submit'
         return newErrors
     }
     const customStyles = {
@@ -133,12 +136,12 @@ export default function Home(props) {
     //     return () => clearTimeout(timeoutId);
     // }, [inputValue]);
     const response = () => {
-        fetch(`https://pricealertback.azurewebsites.net/api/v1/price/coinslist`).then(res => res.json()).then(
+        fetch(apiUrl + "api/v1/price/coinslist").then(res => res.json()).then(
             (result) => {
                 setCoinOptions(result);
             }
         )
-        fetch(`https://pricealertback.azurewebsites.net/api/v1/price/method`).then(res => res.json()).then(
+        fetch(apiUrl + 'api/v1/price/method').then(res => res.json()).then(
             (result) => {
                 setMethodOptions(result);
             }
@@ -159,16 +162,20 @@ export default function Home(props) {
         if (Object.keys(newErrors).length > 0) {
             // We got errors!
             setFormErrors(newErrors)
-        } else {
+        } else if (localStorage.getItem(ACCESS_TOKEN)) {
             setShow(true);
+            const headers = new Headers({
+                'Content-Type': 'application/json',
+            })
+            headers.append('Authorization', 'Bearer ' + localStorage.getItem(ACCESS_TOKEN))
             if (showPercent) {
                 fetch(
-                    'https://pricealertback.azurewebsites.net/api/v1/price/submit',
+                    API_BASE_URL + '/api/form/submit',
                     {
                         method: 'POST',
                         body: JSON.stringify(requestBodyPercent),
-                        url: 'https://pricealertback.azurewebsites.net',
-                        headers: { 'Content-Type': 'application/json' },
+                        url: API_BASE_URL,
+                        headers: headers,
 
                     }).then(response => {
                         return response;
@@ -177,12 +184,12 @@ export default function Home(props) {
                     });
             } else {
                 fetch(
-                    'https://pricealertback.azurewebsites.net/api/v1/price/submit',
+                    API_BASE_URL + '/api/form/submit',
                     {
                         method: 'POST',
                         body: JSON.stringify(requestBody),
-                        url: 'https://pricealertback.azurewebsites.net/',
-                        headers: { 'Content-Type': 'application/json' },
+                        url: API_BASE_URL,
+                        headers: headers,
 
                     }).then(response => {
                         return response;
@@ -190,6 +197,8 @@ export default function Home(props) {
                         setErrors(error)
                     });
             }
+        } else {
+
         }
 
     })
@@ -346,6 +355,9 @@ export default function Home(props) {
                             </Col>
                         </Form.Row>
                         <Button variant="secondary" onClick={handleSubmit}>Submit</Button>
+                        <div>{formErrors.login ? <span style={{ color: 'red' }}>{formErrors.login}</span> : ""}</div>
+
+
                         <Modal className="my-modal" show={show} onHide={handleClose}>
                             <Modal.Header closeButton>
                                 <Modal.Title>Success Submit Alert</Modal.Title>
