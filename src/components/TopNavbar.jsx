@@ -19,15 +19,16 @@ const TopNavbar = () => {
     }
 
     useEffect(() => {
-        if (localStorage.getItem(Email)) {
+        if (localStorage.getItem(ACCESS_TOKEN) && localStorage.getItem(Email)) {
             setEmail(localStorage.getItem(Email));
+            setIsSign(true);
+        } else {
+            setEmail("");
+            localStorage.clear();
+            setIsSign(false);
         }
 
-        if (email === "")
-            setIsSign(false);
-        else
-            setIsSign(true);
-    }, [email])
+    }, [email, localStorage.getItem(Email)])
 
     return (
         <div>
