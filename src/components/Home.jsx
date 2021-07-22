@@ -1,11 +1,9 @@
 import React, { useState, Component, useEffect, useCallback, componentDidMount } from 'react';
-import AsyncSelect from 'react-select/async';
 import Select, { createFilter } from 'react-windowed-select';
 import { Form, Container, Col, Button, DropdownButton, Dropdown, Modal } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
-import Popup from 'reactjs-popup';
 import { ACCESS_TOKEN, API_BASE_URL } from '../constants/const.jsx';
-
+import ReactLoading from 'react-loading';
 import '../css/Home.css';
 export default function Home(props) {
 
@@ -24,6 +22,7 @@ export default function Home(props) {
     const [formErrors, setFormErrors] = useState({})
     const [showPercent, setShowPercent] = useState(false);
     const [show, setShow] = useState(false);
+    const [loading, setLoading] = useState(false);
     const apiUrl = 'https://pricealertback.azurewebsites.net/'
     const handleClose = () => {
         setSubmitSuccess(true)
@@ -43,6 +42,9 @@ export default function Home(props) {
         if (!localStorage.getItem(ACCESS_TOKEN)) newErrors.login = 'please login before submit'
         return newErrors
     }
+    const loadingPic = () => (
+        <ReactLoading type={"spin"} color={"white"} height={50} width={50} />
+    );
     const customStyles = {
         control: base => ({
             ...base,
@@ -151,6 +153,8 @@ export default function Home(props) {
         setShowPercent(method_id.method === 'trailing stop buy' || method_id.method === 'trailing stop sell' || method_id.method === 'arbitrage');
         if (method_id.method === 'arbitrage')
             setShowExchange(false);
+        else
+            setShowExchange(true);
         if (!!formErrors.selectedMethod)
             formErrors.selectedMethod = ''
     })
@@ -220,6 +224,7 @@ export default function Home(props) {
                 'Content-Type': 'application/json',
             })
             headers.append('Authorization', 'Bearer ' + localStorage.getItem(ACCESS_TOKEN))
+            setLoading(true);
             if (showPercent) {
                 fetch(
                     API_BASE_URL + '/api/form/submit',
@@ -230,6 +235,7 @@ export default function Home(props) {
                         headers: headers,
 
                     }).then(response => {
+                        setLoading(false);
                         if (response.ok) {
                             setShow(true);
                             setSubmitSuccess(true);
@@ -251,6 +257,7 @@ export default function Home(props) {
                         headers: headers,
 
                     }).then(response => {
+                        setLoading(false);
                         if (response.ok) {
                             setShow(true);
                             setSubmitSuccess(true);
@@ -386,8 +393,11 @@ export default function Home(props) {
                                 </Form.Control.Feedback>
                             </Col>
                         </Form.Row>
-                        <Button variant="secondary" onClick={handleSubmit}>Submit</Button>
-                        <div>{formErrors.login ? <span style={{ color: 'red' }}>{formErrors.login}</span> : ""}</div>
+                        <div>
+                            <Button variant="secondary" onClick={handleSubmit}>Submit</Button>
+                            <div>{formErrors.login ? <span style={{ color: 'red' }}>{formErrors.login}</span> : ""}</div>
+                        </div>
+                        <div style={{ position: "relative", top: "10px", left: '200px' }}>{loading ? loadingPic() : ''}</div>
                         <Modal className="my-modal" show={!submitSuccess} onHide={handleClose}>
                             <Modal.Header closeButton>
                                 <Modal.Title>Fail Submit Alert</Modal.Title>

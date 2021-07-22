@@ -1,5 +1,4 @@
 import React, { Component, useState, useCallback } from 'react';
-import { useHistory } from 'react-router-dom';
 import { Button, Navbar, Nav, NavDropdown, Form, FormControl, Modal } from "react-bootstrap";
 import { login } from '../util/APIUtils';
 import { ACCESS_TOKEN, Email } from '../constants/const.jsx';

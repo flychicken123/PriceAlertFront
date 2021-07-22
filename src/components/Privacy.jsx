@@ -1,5 +1,4 @@
 import React, { Component, useState } from 'react';
-import { Button, Navbar, Nav, NavDropdown, Form, FormControl, Modal } from "react-bootstrap";
 import { Helmet } from 'react-helmet';
 var perf = require('./privacy.js');
 var template = { __html: perf };
