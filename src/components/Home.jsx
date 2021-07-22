@@ -92,9 +92,8 @@ export default function Home(props) {
     }
     const arbitrage = () => {
         if (showExchange) {
-            return [
+            return (
                 <Form.Row className="row-space">
-
                     <Col xs="auto"><Form.Text className="normalText">on</Form.Text></Col>
                     <Col xs="auto">
 
@@ -130,8 +129,12 @@ export default function Home(props) {
                     </Col>
                     <Col xs="auto"><Form.Text className="normalText">with email</Form.Text></Col>
                 </Form.Row>
-            ]
+            )
+        } else {
+            return (<div><Form.Row><span>(arbitrage is the process of capitalizing on the low correlation
+            </span></Form.Row><span>in the prices of crypto assets across two or more exchanges)</span></div >)
         }
+
     }
     const handleCoinChange = useCallback((coin_id) => {
         setSelectedCoin(coin_id);
