@@ -19,12 +19,16 @@ export default function Home(props) {
     const [coinOptions, setCoinOptions] = useState([]);
     const [methodOptions, setMethodOptions] = useState([]);
     const [exchangeOptions, setExchangeOptions] = useState([]);
-    const [form, setForm] = useState({})
+    const [showExchange, setShowExchange] = useState(true);
+    const [submitSuccess, setSubmitSuccess] = useState(true);
     const [formErrors, setFormErrors] = useState({})
     const [showPercent, setShowPercent] = useState(false);
     const [show, setShow] = useState(false);
     const apiUrl = 'https://pricealertback.azurewebsites.net/'
-    const handleClose = () => setShow(false);
+    const handleClose = () => {
+        setSubmitSuccess(true)
+        setShow(false)
+    };
     const findFormErrors = () => {
 
         const newErrors = {}
@@ -35,7 +39,7 @@ export default function Home(props) {
         // rating errors
         if (!email || email === '') newErrors.email = 'field cannot be blank'
         if (!selectedMethod || selectedMethod === '') newErrors.selectedMethod = 'select cannot be blank'
-        if (!selectedExchange || selectedExchange === '') newErrors.selectedExchange = 'select cannot be blank'
+        if ((!selectedExchange || selectedExchange === '') && showExchange) newErrors.selectedExchange = 'select cannot be blank'
         if (!localStorage.getItem(ACCESS_TOKEN)) newErrors.login = 'please login before submit'
         return newErrors
     }
@@ -86,6 +90,49 @@ export default function Home(props) {
             <Col xs="auto"><Form.Text className="normalText">USD</Form.Text></Col>]
         }
     }
+    const arbitrage = () => {
+        if (showExchange) {
+            return [
+                <Form.Row className="row-space">
+
+                    <Col xs="auto"><Form.Text className="normalText">on</Form.Text></Col>
+                    <Col xs="auto">
+
+                        <Select
+                            cacheOptions
+                            defaultOptions
+                            onChange={handleExchangeChange}
+                            value={selectedExchange}
+                            options={exchangeOptions}
+                            getOptionValue={option => option.exchange}
+                            getOptionLabel={option => option.exchange}
+                            styles={customStyles}
+                            theme={theme => ({
+                                ...theme,
+                                borderRadius: 0,
+                                colors: {
+                                    ...theme.colors,
+                                    primary25: '#292d36',
+                                    primary75: 'white',
+                                    primary: '#292d36',
+                                    neutral0: '#434c5f',
+                                    neutral80: 'white',
+                                    neutral90: 'white',
+
+                                },
+                            })}
+                        />
+                        {!!formErrors.selectedExchange && (
+                            <div>
+                                <span className="text-danger" style={{ fontSize: 15 }}>{formErrors.selectedExchange}</span>
+                            </div>
+                        )}
+                    </Col>
+                    <Col xs="auto"><Form.Text className="normalText">with email</Form.Text></Col>
+                </Form.Row>
+            ]
+        }
+    }
     const handleCoinChange = useCallback((coin_id) => {
         setSelectedCoin(coin_id);
         if (!!formErrors.coin)
@@ -98,7 +145,9 @@ export default function Home(props) {
     })
     const handleMethodChange = useCallback((method_id) => {
         setSelectedMethod(method_id);
-        setShowPercent(method_id.method === 'trailing stop buy' || method_id.method === 'trailing stop sell');
+        setShowPercent(method_id.method === 'trailing stop buy' || method_id.method === 'trailing stop sell' || method_id.method === 'arbitrage');
+        if (method_id.method === 'arbitrage')
+            setShowExchange(false);
         if (!!formErrors.selectedMethod)
             formErrors.selectedMethod = ''
     })
@@ -163,7 +212,7 @@ export default function Home(props) {
             // We got errors!
             setFormErrors(newErrors)
         } else if (localStorage.getItem(ACCESS_TOKEN)) {
-            setShow(true);
+
             const headers = new Headers({
                 'Content-Type': 'application/json',
             })
@@ -178,7 +227,14 @@ export default function Home(props) {
                         headers: headers,
 
                     }).then(response => {
-                        return response;
+                        if (response.ok) {
+                            setShow(true);
+                            setSubmitSuccess(true);
+                            return response;
+                        }
+                        else {
+                            setSubmitSuccess(false)
+                        }
                     }).catch(error => {
                         setErrors(error)
                     });
@@ -192,8 +248,16 @@ export default function Home(props) {
                         headers: headers,
 
                     }).then(response => {
-                        return response;
+                        if (response.ok) {
+                            setShow(true);
+                            setSubmitSuccess(true);
+                            return response;
+                        }
+                        else {
+                            setSubmitSuccess(false)
+                        }
                     }).catch(error => {
+                        localStorage.setItem(ACCESS_TOKEN, "");
                         setErrors(error)
                     });
             }
@@ -311,42 +375,7 @@ export default function Home(props) {
                                 changeMethod()
                             }
                         </Form.Row>
-                        <Form.Row className="row-space">
-                            <Col xs="auto"><Form.Text className="normalText">on</Form.Text></Col>
-                            <Col xs="auto">
-
-                                <Select
-                                    cacheOptions
-                                    defaultOptions
-                                    onChange={handleExchangeChange}
-                                    value={selectedExchange}
-                                    options={exchangeOptions}
-                                    getOptionValue={option => option.exchange}
-                                    getOptionLabel={option => option.exchange}
-                                    styles={customStyles}
-                                    theme={theme => ({
-                                        ...theme,
-                                        borderRadius: 0,
-                                        colors: {
-                                            ...theme.colors,
-                                            primary25: '#292d36',
-                                            primary75: 'white',
-                                            primary: '#292d36',
-                                            neutral0: '#434c5f',
-                                            neutral80: 'white',
-                                            neutral90: 'white',
-
-                                        },
-                                    })}
-                                />
-                                {!!formErrors.selectedExchange && (
-                                    <div>
-                                        <span className="text-danger" style={{ fontSize: 15 }}>{formErrors.selectedExchange}</span>
-                                    </div>
-                                )}
-                            </Col>
-                            <Col xs="auto"><Form.Text className="normalText">with email</Form.Text></Col>
-                        </Form.Row>
+                        {arbitrage()}
                         <Form.Row className="row-space">
                             <Col xs="auto"> <Form.Control isInvalid={!!formErrors.email} className="smaller-input" htmlSize="50" size="sm" type="text" placeholder="Your email address" onChange={handleEmailChange} />
                                 <Form.Control.Feedback type='invalid'>
@@ -356,7 +385,17 @@ export default function Home(props) {
                         </Form.Row>
                         <Button variant="secondary" onClick={handleSubmit}>Submit</Button>
                         <div>{formErrors.login ? <span style={{ color: 'red' }}>{formErrors.login}</span> : ""}</div>
-
+                        <Modal className="my-modal" show={!submitSuccess} onHide={handleClose}>
+                            <Modal.Header closeButton>
+                                <Modal.Title>Fail Submit Alert</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>There was an issue during submit.</Modal.Body>
+                            <Modal.Footer>
+                                <Button variant="primary" onClick={handleClose}>
+                                    Close
+                                </Button>
+                            </Modal.Footer>
+                        </Modal>
 
                         <Modal className="my-modal" show={show} onHide={handleClose}>
                             <Modal.Header closeButton>
