@@ -2,7 +2,7 @@ import React, { useState, Component, useEffect, useCallback, componentDidMount }
 import Select, { createFilter } from 'react-windowed-select';
 import { Form, Container, Col, Button, DropdownButton, Dropdown, Modal } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
-import { ACCESS_TOKEN, API_BASE_URL } from '../constants/const.jsx';
+import { ACCESS_TOKEN, API_BASE_URL, Email } from '../constants/const.jsx';
 import ReactLoading from 'react-loading';
 import '../css/Home.css';
 export default function Home(props) {
@@ -39,7 +39,10 @@ export default function Home(props) {
         if (!email || email === '') newErrors.email = 'field cannot be blank'
         if (!selectedMethod || selectedMethod === '') newErrors.selectedMethod = 'select cannot be blank'
         if ((!selectedExchange || selectedExchange === '') && showExchange) newErrors.selectedExchange = 'select cannot be blank'
-        if (!localStorage.getItem(ACCESS_TOKEN)) newErrors.login = 'please login before submit'
+        if (!localStorage.getItem(ACCESS_TOKEN)) {
+            localStorage.clear();
+            newErrors.login = 'please login before submit'
+        }
         return newErrors
     }
     const loadingPic = () => (
