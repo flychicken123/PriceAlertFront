@@ -75,7 +75,7 @@ export default function Home(props) {
     const changeMethod = () => {
         if (showPercent) {
             return [<Col xs="auto"><Form.Text className="normalText">on</Form.Text></Col>,
-            <Col xs="auto"> <Form.Control className="smaller-input" htmlSize="10" size="sm" type="text" placeholder="1-100" onChange={handlePriceChange} />
+            <Col xs="auto"> <Form.Control className="smaller-input" htmlSize="10" size="sm" type="text" placeholder="0.0-100.0" onChange={handlePriceChange} />
                 <Form.Control.Feedback type='invalid'>
                     {formErrors.price}
                 </Form.Control.Feedback></Col>,
