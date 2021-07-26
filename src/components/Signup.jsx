@@ -1,7 +1,9 @@
 import React, { Component, useState } from 'react';
-import { Button,Navbar, Nav, NavDropdown, Form, FormControl, Modal, Col, Card } from "react-bootstrap";
+import { Button, Navbar, Nav, NavDropdown, Form, FormControl, Modal, Col, Card } from "react-bootstrap";
 import { signup, checkUsernameAvailability, checkEmailAvailability } from '../util/APIUtils.jsx';
 import Notification, { notify } from 'react-notify-bootstrap'
+import ReactLoading from 'react-loading';
+
 const Login = () => {
 
     const handleRegShow = () => setShowReg(true);
@@ -11,19 +13,24 @@ const Login = () => {
     const [error, setErrors] = useState("");
     const [agree, setAgree] = useState(false);
     const [message, setMessage] = useState(false);
+    const [messageContent, setMessageContent] = useState("");
     const [showSignUp, setShowSignUp] = useState(false);
     const [formErrors, setFormErrors] = useState({})
-    const EMAIL_REGEX = RegExp('[^@ ]+@[^@ ]+\\.[^@ ]+');
+    const [loading, setLoading] = useState(false);
 
+    const EMAIL_REGEX = RegExp('[^@ ]+@[^@ ]+\\.[^@ ]+');
+    const loadingPic = () => (
+        <ReactLoading type={"spin"} color={"white"} height={50} width={50} />
+    );
     const findFormErrors = () => {
 
         const newErrors = {}
         // name errors
         if (!emailReg || emailReg === '') newErrors.email = 'select cannot be blank!'
-        if(!EMAIL_REGEX.test(emailReg)) newErrors.email = 'Email not valid!'
-        if(emailReg.length>40) newErrors.email = 'Email is too long (Maximum 40 characters allowed)'
-        if(passwordReg.length>24) newErrors.password ='password is too long (Maximum 24 characters allowed)'
-        if(passwordReg.length<8) newErrors.password ='password is too short (Minmium 8 characters allowed)'
+        if (!EMAIL_REGEX.test(emailReg)) newErrors.email = 'Email not valid!'
+        if (emailReg.length > 40) newErrors.email = 'Email is too long (Maximum 40 characters allowed)'
+        if (passwordReg.length > 24) newErrors.password = 'password is too long (Maximum 24 characters allowed)'
+        if (passwordReg.length < 8) newErrors.password = 'password is too short (Minmium 8 characters allowed)'
         // food errors
         if (!passwordReg || passwordReg === '') newErrors.password = 'field cannot be blank!'
         return newErrors
@@ -40,14 +47,19 @@ const Login = () => {
         setMessage(false)
     };
     const showMessage = () => {
-        if (message) {
+        if (!messageContent) {
             return [
                 <Card.Text><span style={{ color: 'red' }}>Sorry! Something went wrong. Please try again!</span></Card.Text>
+
             ]
+        } else {
+            return <Card.Text><span style={{ color: 'red' }}>{messageContent}</span></Card.Text>
+
         }
     }
 
-     
+
+
     function validateForm() {
         return emailReg.length > 0 && passwordReg.length > 0 && agree;
     }
@@ -56,40 +68,55 @@ const Login = () => {
         email: emailReg,
         password: passwordReg
     }
-const sendNotification = () => {
-    notify({ text: "Your account has been successfully created", variant: "success" });
-  };
-    const showSuccessMessage=()=>{
-        if(showSignUp){
-            return <Notification position="top"/>
+    const sendNotification = () => {
+        notify({ text: "Your account has been successfully created", variant: "success" });
+    };
+    const showSuccessMessage = () => {
+        if (showSignUp) {
+            return <Notification position="top" />
 
         }
     }
     function handleSubmit(event) {
         event.preventDefault();
-      const newErrors = findFormErrors()
+        const newErrors = findFormErrors()
         const signupRequest = {
             "email": emailReg,
             "password": passwordReg
         }
-          if (Object.keys(newErrors).length > 0) {
+        if (Object.keys(newErrors).length > 0) {
             // We got errors!
             setFormErrors(newErrors)
-          }else{
-        signup(signupRequest)
-            .then(response => {
-                setShowSignUp(true);
-                setShowReg(false);
-                 setAgree(false)
-                 sendNotification();
-            }).catch(error => {
-                setMessage(true);
-            });
-      }
+        } else {
+            setLoading(true);
+            signup(signupRequest)
+                .then(response => {
+                    setShowSignUp(true);
+                    setShowReg(false);
+                    setAgree(false)
+                    sendNotification();
+                    setLoading(false)
+                    return response.json();
+                }).then((data) => {
+                    if (!data.success) {
+                        setMessage(true);
+                        setMessageContent(data.message)
+                    } else {
+                        setMessage(false);
+                    }
+
+                    setLoading(false)
+                }).catch(error => {
+                    setMessageContent(error.message)
+                    setMessage(true);
+                    setLoading(false)
+                });
+
+        }
     }
 
 
-         
+
     return (
 
         <div>
@@ -108,23 +135,23 @@ const sendNotification = () => {
                             <Form.Label>Email address</Form.Label>
                             <Form.Control isInvalid={!!formErrors.email} type="email" placeholder="Enter email" value={emailReg}
                                 onChange={(e) => setEmailReg(e.target.value)} />
-                                   <Form.Control.Feedback type='invalid'>
-                                    {formErrors.email}
-                                </Form.Control.Feedback>
+                            <Form.Control.Feedback type='invalid'>
+                                {formErrors.email}
+                            </Form.Control.Feedback>
                         </Form.Group>
                         <Form.Group controlId="formBasicPassword">
                             <Form.Label>Password</Form.Label>
                             <Form.Control isInvalid={!!formErrors.password} type="password" placeholder="Password" value={passwordReg}
                                 onChange={(e) => setPasswordReg(e.target.value)} />
-                                <Form.Control.Feedback type='invalid'>
-                                    {formErrors.password}
-                                </Form.Control.Feedback>
+                            <Form.Control.Feedback type='invalid'>
+                                {formErrors.password}
+                            </Form.Control.Feedback>
                         </Form.Group>
                     </Form>
                 </Modal.Body>
 
                 <Modal.Footer centered="true" className="card">
-                    <Card  border="light">
+                    <Card border="light">
                         {showMessage()}
                         <Button variant="primary" onClick={handleSubmit} disabled={!validateForm()} >
                             Sign up
@@ -138,11 +165,12 @@ const sendNotification = () => {
                                 <Card.Link href="/agreement"> Privacy Policy</Card.Link>
                             </Card.Text>
                         </Card.Body>
+                        <div style={{ position: "relative", top: "10px", left: '200px' }}>{loading ? loadingPic() : ''}</div>
                     </Card>
                 </Modal.Footer>
             </Modal>
         </div >
     )
-    
+
 }
 export default Login;
