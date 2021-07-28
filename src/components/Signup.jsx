@@ -20,7 +20,7 @@ const Login = () => {
 
     const EMAIL_REGEX = RegExp('[^@ ]+@[^@ ]+\\.[^@ ]+');
     const loadingPic = () => (
-        <ReactLoading type={"spin"} color={"white"} height={50} width={50} />
+        <ReactLoading type={"bubbles"} color={"black"} height={50} width={50} />
     );
     const findFormErrors = () => {
 
@@ -47,6 +47,7 @@ const Login = () => {
         setMessage(false)
     };
     const showMessage = () => {
+        if (message === false) return;
         if (!messageContent) {
             return [
                 <Card.Text><span style={{ color: 'red' }}>Sorry! Something went wrong. Please try again!</span></Card.Text>
@@ -156,6 +157,8 @@ const Login = () => {
                         <Button variant="primary" onClick={handleSubmit} disabled={!validateForm()} >
                             Sign up
                         </Button>
+                        <div style={{ position: "relative", top: "10px", left: '150px' }}>{loading ? loadingPic() : ""}</div>
+
                         <Card.Body>
                             <Card.Text>
                                 <input type="checkbox" id="agree" onChange={checkboxHandler} />
@@ -165,7 +168,6 @@ const Login = () => {
                                 <Card.Link href="/agreement"> Privacy Policy</Card.Link>
                             </Card.Text>
                         </Card.Body>
-                        <div style={{ position: "relative", top: "10px", left: '200px' }}>{loading ? loadingPic() : ''}</div>
                     </Card>
                 </Modal.Footer>
             </Modal>

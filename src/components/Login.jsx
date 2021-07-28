@@ -2,6 +2,7 @@ import React, { Component, useState, useCallback } from 'react';
 import { Button, Navbar, Nav, NavDropdown, Form, FormControl, Modal } from "react-bootstrap";
 import { login } from '../util/APIUtils';
 import { ACCESS_TOKEN, Email } from '../constants/const.jsx';
+import ReactLoading from 'react-loading';
 
 const Login = ({ onButtonClick }) => {
     const handleClose = () => setShow(false);
@@ -11,6 +12,11 @@ const Login = ({ onButtonClick }) => {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [onLogin, setOnLogin] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    const loadingPic = () => (
+        <ReactLoading type={"balls"} color={"black"} height={50} width={50} />
+    );
     function validateForm() {
         return email.length > 0 && password.length > 0;
     }
@@ -21,6 +27,7 @@ const Login = ({ onButtonClick }) => {
             email: email,
             password: password
         }
+        setLoading(true)
         login(loginRequest)
             .then(response => {
                 localStorage.setItem(ACCESS_TOKEN, response.accessToken);
@@ -30,7 +37,11 @@ const Login = ({ onButtonClick }) => {
                 onButtonClick(email)
                 setError("");
                 handleClose();
+                setLoading(false)
+
             }).catch(error => {
+                setLoading(false)
+
                 if (error.status === 401) {
                     setError("Your Username or Password is incorrect. Please try again!");
 
@@ -65,13 +76,25 @@ const Login = ({ onButtonClick }) => {
                                 onChange={(e) => setPassword(e.target.value)} />
                         </Form.Group>
                     </Form>
+
                 </Modal.Body>
+
                 <Modal.Footer>
-                    <Button variant="primary" onClick={handleSubmit} disabled={!validateForm()} >
-                        Login
-                    </Button>
+                    <Form>
+
+                        <Button variant="primary" onClick={handleSubmit} disabled={!validateForm()} >
+                            Login
+                        </Button>
+
+                        {loading ? loadingPic() : ""}
+
+                    </Form>
                 </Modal.Footer>
+
+
             </Modal>
+
+
         </div>
     )
 }

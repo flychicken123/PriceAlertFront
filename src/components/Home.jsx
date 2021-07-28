@@ -13,6 +13,7 @@ export default function Home(props) {
     const [selectedExchange, setSelectedExchange] = useState("");
     const [price, setPrice] = useState("");
     const [email, setEmail] = useState("");
+    const [webhook, setWebhook] = useState("")
     const [errors, setErrors] = useState("");
     const [coinOptions, setCoinOptions] = useState([]);
     const [methodOptions, setMethodOptions] = useState([]);
@@ -23,6 +24,7 @@ export default function Home(props) {
     const [showPercent, setShowPercent] = useState(false);
     const [show, setShow] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [sendingMethod, setSendingMethod] = useState("");
     const apiUrl = 'https://pricealertback.azurewebsites.net/'
     const handleClose = () => {
         setSubmitSuccess(true)
@@ -36,7 +38,17 @@ export default function Home(props) {
         // food errors
         if (!price || price === '') newErrors.price = 'field cannot be blank!'
         // rating errors
-        if (!email || email === '') newErrors.email = 'field cannot be blank'
+        if (!sendingMethod || sendingMethod === '')
+            newErrors.sendingMethod = 'please select a method'
+        else {
+            if ((!email || email === '') && (!webhook || webhook === '')) {
+                if (sendingMethod.value === 'Email') {
+                    newErrors.email = 'field cannot be blank'
+                } else {
+                    newErrors.webhook = 'field cannot be blank'
+                }
+            }
+        }
         if (!selectedMethod || selectedMethod === '') newErrors.selectedMethod = 'select cannot be blank'
         if ((!selectedExchange || selectedExchange === '') && showExchange) newErrors.selectedExchange = 'select cannot be blank'
         if (!localStorage.getItem(ACCESS_TOKEN)) {
@@ -95,6 +107,27 @@ export default function Home(props) {
             <Col xs="auto"><Form.Text className="normalText">USD</Form.Text></Col>]
         }
     }
+    const sendingMethodContent = (sendingMethod) => {
+        if (sendingMethod.value === "Discord") {
+            console.log(sendingMethod.value)
+            return ([<Form.Control isInvalid={!!formErrors.webhook} className="smaller-input" htmlSize="50" size="sm" type="text" placeholder="Your discord webhooks url" onChange={handleDiscordChange} />,
+            <Form.Control.Feedback type='invalid'>
+                {formErrors.webhook}
+            </Form.Control.Feedback>]
+            )
+        } else if (sendingMethod.value === "Email") {
+
+            return (
+                [<Form.Control isInvalid={!!formErrors.email} className="smaller-input" htmlSize="50" size="sm" type="text" placeholder="Your email address" onChange={handleEmailChange} />,
+                <Form.Control.Feedback type='invalid'>
+                    {formErrors.email}
+                </Form.Control.Feedback>]
+            )
+
+        } else {
+            console.log("it's not possible")
+        }
+    }
     const arbitrage = () => {
         if (showExchange) {
             return (
@@ -132,7 +165,29 @@ export default function Home(props) {
                             </div>
                         )}
                     </Col>
-                    <Col xs="auto"><Form.Text className="normalText">with email</Form.Text></Col>
+                    <Col xs="auto"><Form.Text className="normalText">with</Form.Text></Col>
+                    <Col xs="auto">
+                        <Select styles={customStyles} value={sendingMethod} onChange={handleSendingMethodChange} options={options} theme={theme => ({
+                            ...theme,
+                            borderRadius: 0,
+                            colors: {
+                                ...theme.colors,
+                                primary25: '#292d36',
+                                primary75: 'white',
+                                primary: '#292d36',
+                                neutral0: '#434c5f',
+                                neutral80: 'white',
+                                neutral90: 'white',
+
+                            },
+                        })} />
+
+                        {!!formErrors.sendingMethod && (
+                            <div>
+                                <span className="text-danger" style={{ fontSize: 15 }}>{formErrors.sendingMethod}</span>
+                            </div>
+                        )}
+                    </Col>
                 </Form.Row>
             )
         } else {
@@ -150,6 +205,12 @@ export default function Home(props) {
         setSelectedExchange(exchange_id);
         if (!!formErrors.selectedExchange)
             formErrors.selectedExchange = ''
+    })
+
+    const handleSendingMethodChange = useCallback((sendingMethod) => {
+        setSendingMethod(sendingMethod);
+        if (!!formErrors.sendingMethod)
+            formErrors.sendingMethod = ''
     })
     const handleMethodChange = useCallback((method_id) => {
         setSelectedMethod(method_id);
@@ -173,13 +234,21 @@ export default function Home(props) {
         if (!!formErrors.email)
             formErrors.email = ''
     }
+    const handleDiscordChange = (event) => {
+        event.preventDefault();
+        setWebhook(event.target.value);
+        if (!!formErrors.webhook)
+            formErrors.webhook = ''
+    }
     const requestBody =
     {
         coinType: selectedCoin.name,
         method: selectedMethod.method,
         price: price,
         exchange: selectedExchange.id,
-        email: email
+        email: email,
+        sendingMethod: sendingMethod.value,
+        discord: webhook
     }
     const requestBodyPercent =
     {
@@ -187,7 +256,9 @@ export default function Home(props) {
         method: selectedMethod.method,
         percent: price,
         exchange: selectedExchange.id,
-        email: email
+        email: email,
+        sendingMethod: sendingMethod.value,
+        discord: webhook
     }
     // useEffect(() => {
     //     const timeoutId = setTimeout(() => setLoad(false), 500);
@@ -215,6 +286,11 @@ export default function Home(props) {
         response();
     }, [])
 
+    const options = [
+        { value: 'Email', label: 'Email' },
+        { value: 'Discord', label: 'Discord' }
+
+    ]
 
     const handleSubmit = useCallback(() => {
         const newErrors = findFormErrors()
@@ -279,22 +355,6 @@ export default function Home(props) {
         }
 
     })
-    const fetchCoinList = useCallback((input) => {
-
-        if (input == "") {
-            return fetch(`https://pricealertback.azurewebsites.net/api/v1/price/coinslist`).then(res => res.json());
-        } else {
-            return fetch(`https://pricealertback.azurewebsites.net/api/v1/price/coinslist/${input}`).then(res => res.json());
-        }
-    }
-    )
-
-
-
-    const fetchMethodList = () => {
-        return fetch(`https://pricealertback.azurewebsites.net/api/v1/price/method`).then(res => res.json());
-
-    }
 
     return (
 
@@ -390,10 +450,8 @@ export default function Home(props) {
                         </Form.Row>
                         {arbitrage()}
                         <Form.Row className="row-space">
-                            <Col xs="auto"> <Form.Control isInvalid={!!formErrors.email} className="smaller-input" htmlSize="50" size="sm" type="text" placeholder="Your email address" onChange={handleEmailChange} />
-                                <Form.Control.Feedback type='invalid'>
-                                    {formErrors.email}
-                                </Form.Control.Feedback>
+                            <Col xs="auto">
+                                {sendingMethodContent(sendingMethod)}
                             </Col>
                         </Form.Row>
                         <div>
