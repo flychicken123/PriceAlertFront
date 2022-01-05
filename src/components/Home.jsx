@@ -100,7 +100,7 @@ export default function Home(props) {
             ]
         } else {
             return [<Col xs="auto"><Form.Text className="normalText">of price</Form.Text></Col>,
-            <Col xs="auto"> <Form.Control isInvalid={!!formErrors.price} className="smaller-input" htmlSize="10" size="sm" type="text" placeholder="price number" onChange={handlePriceChange} />
+            <Col className='price-col' xs="auto"> <Form.Control isInvalid={!!formErrors.price} className="smaller-input" htmlSize="10" size="sm" type="text" placeholder="price number" onChange={handlePriceChange} />
                 <Form.Control.Feedback type='invalid'>
                     {formErrors.price}
                 </Form.Control.Feedback></Col>,
@@ -362,11 +362,11 @@ export default function Home(props) {
             <Helmet>
                 <style>{'body { background-color: #434c5f;text-align: center; padding: 20px;color: white; }'}</style>
             </Helmet>
-            <Container fluid="md">
+            <Container fluid="md" className='container-wrapper'>
 
-                <div style={{ display: 'flex', justifyContent: 'center', height: '50vh', backgroundColor: '#434c5f', width: '200' }}>
+                <div className="main-container">
 
-                    <Form>
+                    <Form className="form">
                         <h1>Price Alert</h1>
 
                         <Form.Row className="row-space">

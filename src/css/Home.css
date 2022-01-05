@@ -5,8 +5,8 @@
     font-family: Arial;
     text-align: center;
   } */
-  .normalText{font-size: 20px;}
   * {font-size: 19px;}
+  .normalText{font-size: 20px;}
 
   .smaller-input {
     font-size: 15px;
@@ -14,8 +14,50 @@
   }
   .row-space{
     margin: 12px;
+
+    
+
   }
   .my-modal .modal-content {
     background-color: #434c5f;
     color: white;
+  }
+
+  .main-container{
+   display: flex;
+   justify-content: center;
+   height: 50vh;
+   background-color: #434c5f; 
+  }
+  
+  .form-row{
+    flex-wrap: nowrap;
+  }
+
+  .form-text{
+    white-space:nowrap;
+  }
+
+  @media only screen and (max-width: 600px) {
+
+    .form{
+      position: absolute;
+      top: 50%;
+      -ms-transform: translateY(-50%);
+      transform: translateY(-50%);
+    }
+    .row-space{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .form-row{
+      display: flex;
+      justify-content: center;
+    }
+    .basic-single{
+      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+    }
   }
