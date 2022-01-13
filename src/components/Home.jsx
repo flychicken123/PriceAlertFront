@@ -1,10 +1,12 @@
 import React, { useState, Component, useEffect, useCallback, componentDidMount } from 'react';
 import Select, { createFilter } from 'react-windowed-select';
-import { Form, Container, Col, Button, DropdownButton, Dropdown, Modal } from 'react-bootstrap';
+import { Form, Navbar, Nav, NavDropdown, Container, Col, Button, DropdownButton, Dropdown, Modal } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
 import { ACCESS_TOKEN, API_BASE_URL, Email } from '../constants/const.jsx';
 import ReactLoading from 'react-loading';
 import '../css/Home.css';
+import Login from './Login.jsx';
+import SignUp from './Signup.jsx';
 export default function Home(props) {
 
     const [coinTypes, setCoinTypes] = useState("");
@@ -53,7 +55,8 @@ export default function Home(props) {
         if ((!selectedExchange || selectedExchange === '') && showExchange) newErrors.selectedExchange = 'select cannot be blank'
         if (!localStorage.getItem(ACCESS_TOKEN)) {
             localStorage.clear();
-            newErrors.login = 'please login before submit'
+            // newErrors.login = 'please login before submit'
+            newErrors.login = <div><p>please login before submit. If you don't have account, you can </p><SignUp /></div>
         }
         return newErrors
     }
