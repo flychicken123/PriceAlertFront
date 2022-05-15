@@ -2,7 +2,7 @@ import React, { useState, Component, useEffect, useCallback, componentDidMount }
 import Select, { createFilter } from 'react-windowed-select';
 import { Form, Navbar, Nav, NavDropdown, Container, Col, Button, DropdownButton, Dropdown, Modal } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
-import { ACCESS_TOKEN, API_BASE_URL, Email } from '../constants/const.jsx';
+import { ACCESS_TOKEN, API_BASE_URL,Back_API_URL, Email } from '../constants/const.jsx';
 import ReactLoading from 'react-loading';
 import '../css/Home.css';
 import Login from './Login.jsx';
@@ -56,7 +56,7 @@ export default function Home(props) {
         if (!localStorage.getItem(ACCESS_TOKEN)) {
             localStorage.clear();
             // newErrors.login = 'please login before submit'
-            newErrors.login = <div><p>please login before submit. If you don't have account, you can </p><SignUp /></div>
+            // newErrors.login = <div><p>please login before submit. If you don't have account, you can </p><SignUp /></div>
         }
         return newErrors
     }
@@ -354,7 +354,53 @@ export default function Home(props) {
                     });
             }
         } else {
+            setLoading(true);
+            if (showPercent) {
+                fetch(
+                    Back_API_URL + '/api/v1/price/submit',
+                    {
+                        method: 'POST',
+                        body: JSON.stringify(requestBodyPercent),
+                        url: API_BASE_URL,
+                        headers: { 'Content-Type': 'application/json' },
 
+                    }).then(response => {
+                        setLoading(false);
+                        if (response.ok) {
+                            setShow(true);
+                            setSubmitSuccess(true);
+                            return response;
+                        }
+                        else {
+                            setSubmitSuccess(false)
+                        }
+                    }).catch(error => {
+                        setErrors(error)
+                    });
+            } else {
+                fetch(
+                    Back_API_URL + '/api/v1/price/submit',
+                    {
+                        method: 'POST',
+                        body: JSON.stringify(requestBody),
+                        url: API_BASE_URL,
+                        headers: { 'Content-Type': 'application/json' },
+
+                    }).then(response => {
+                        setLoading(false);
+                        if (response.ok) {
+                            setShow(true);
+                            setSubmitSuccess(true);
+                            return response;
+                        }
+                        else {
+                            setSubmitSuccess(false)
+                        }
+                    }).catch(error => {
+                        localStorage.setItem(ACCESS_TOKEN, "");
+                        setErrors(error)
+                    });
+            }
         }
 
     })
